@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "K6+PSoQIm+S3STaz8Eu3wrkNH1opBi04JbXKpjOk9U+ssyQ5JVcI0jRKN0JwnW05mu4i8wHUwcKrlN3E8Dl77Q==",
+  "success": true,
+  "projectFilePath": "/Users/solifassalimu/Repository/Zvent/Zvent.Server/src/Zvent.Server.WebApi/Zvent.Server.WebApi.csproj",
+  "expectedPackageFiles": [
+    "/Users/solifassalimu/.nuget/packages/microsoft.aspnetcore.openapi/8.0.1/microsoft.aspnetcore.openapi.8.0.1.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/microsoft.openapi/1.4.3/microsoft.openapi.1.4.3.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/swashbuckle.aspnetcore/6.4.0/swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/swashbuckle.aspnetcore.swagger/6.4.0/swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.4.0/swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
+    "/Users/solifassalimu/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.4.0/swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}
