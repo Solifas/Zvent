@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/Zvent.Server.WebApi.props" />
-</Project>
