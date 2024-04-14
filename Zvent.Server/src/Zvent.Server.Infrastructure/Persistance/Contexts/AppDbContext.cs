@@ -1,14 +1,10 @@
 using Zvent.Server.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Zvent.Server.Infrastructure.Contexts;
+namespace Zvent.Server.Infrastructure.Persistance.Contexts;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Event> Events { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Survey> Surveys { get; set; }

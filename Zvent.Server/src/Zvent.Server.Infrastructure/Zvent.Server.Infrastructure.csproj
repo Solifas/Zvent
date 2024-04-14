@@ -9,9 +9,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.302.15" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zvent.Server.Domain\Zvent.Server.Domain.csproj" />
+    <ProjectReference Include="..\Zvent.Server.Usecase\Zvent.Server.Usecase.csproj" />
   </ItemGroup>
 
 </Project>

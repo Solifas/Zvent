@@ -13,11 +13,14 @@
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.303.14" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zvent.Server.Application\Zvent.Server.Application.csproj" />
+    <ProjectReference Include="..\Zvent.Server.Usecase\Zvent.Server.Usecase.csproj" />
     <ProjectReference Include="..\Zvent.Server.Domain\Zvent.Server.Domain.csproj" />
     <ProjectReference Include="..\Zvent.Server.Infrastructure\Zvent.Server.Infrastructure.csproj" />
+  </ItemGroup>
 
 </Project>

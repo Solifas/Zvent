@@ -6,3 +6,9 @@ public enum TicketType
     VIP,
     VVIP
 }
+
+public enum UserType
+{
+    Admin,
+    User
+}
