@@ -7,7 +7,7 @@ namespace Zvent.Server.Domain.Entities;
 public class Ticket
 {
     [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonPropertyName("eventId")]
     public int EventId { get; set; }

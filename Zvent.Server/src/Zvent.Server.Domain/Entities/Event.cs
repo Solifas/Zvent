@@ -6,7 +6,7 @@ namespace Zvent.Server.Domain.Entities;
 public class Event
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
     public required string Name { get; set; }

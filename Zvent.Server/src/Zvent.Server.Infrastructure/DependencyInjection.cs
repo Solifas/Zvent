@@ -6,7 +6,9 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Zvent.Server.Infrastructure.Authentication;
 using Zvent.Server.Infrastructure.Persistance.Repositories;
+using Zvent.Server.Usecase.Authentication;
 using Zvent.Server.Usecase.Persistance.Interfaces;
 
 namespace Zvent.Server.Infrastructure;
@@ -16,14 +18,13 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
 
+        services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddScoped<IUserRepository, UserDynamoDbRepository>();
         services.AddScoped<IEventsRepository, EventsDynamoDbRepository>();
-        services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ITicketRepository, TicketDynamoDbRepository>();
 
         services.AddSingleton<IAmazonDynamoDB>(_ => new AmazonDynamoDBClient(RegionEndpoint.EUWest1));
-        // services.AddAutoMapper(typeof(DependencyInjection).Assembly);
-        // services.AddScoped<IJwtService, JwtService>();
-        // services.AddScoped<IPasswordService, PasswordService>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
