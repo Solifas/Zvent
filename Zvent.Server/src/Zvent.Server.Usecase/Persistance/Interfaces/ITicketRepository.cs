@@ -6,7 +6,7 @@ public interface ITicketRepository
 {
     Task<Ticket?> GetTicket(Guid id);
     IAsyncEnumerable<Ticket> GetTickets(int page, int pageSize);
-    Task<Ticket> CreateTicket(Ticket ticket);
-    Task<Ticket> UpdateTicket(Ticket ticket);
+    Task<Guid> CreateTicket(Ticket ticket);
+    Task<bool> UpdateTicket(Ticket ticket);
     Task DeleteTicket(Guid id);
 }

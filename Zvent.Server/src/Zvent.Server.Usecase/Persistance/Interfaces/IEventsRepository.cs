@@ -6,7 +6,7 @@ public interface IEventsRepository
 {
     Task<Event?> GetEvent(Guid id);
     IAsyncEnumerable<Event> GetEvents(int page, int pageSize);
-    Task<Event> CreateEvent(Event @event);
-    Task<Event> UpdateEvent(Event @event);
+    Task<bool> CreateEvent(Event @event);
+    Task<bool> UpdateEvent(Event @event);
     Task DeleteEvent(Guid id);
 }

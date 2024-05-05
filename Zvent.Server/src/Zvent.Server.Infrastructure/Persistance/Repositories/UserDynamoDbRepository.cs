@@ -10,12 +10,13 @@ namespace Zvent.Server.Infrastructure.Persistance.Repositories;
 
 public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
 {
+    private const string TableName = "Users";
     public async Task<bool> CreateUser(User user)
     {
         var userDocument = Document.FromJson(JsonSerializer.Serialize(user));
         var request = new PutItemRequest
         {
-            TableName = "Users",
+            TableName = TableName,
             Item = userDocument.ToAttributeMap()
         };
 
@@ -28,7 +29,7 @@ public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
     {
         var request = new DeleteItemRequest
         {
-            TableName = "Users",
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>
             {
                 { "Id", new AttributeValue { S = id.ToString() } }
@@ -45,14 +46,14 @@ public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
         return true;
     }
 
-    public async Task<User?> GetUser(Guid id)
+    public async Task<User?> GetUser(string userName)
     {
         var request = new GetItemRequest
         {
-            TableName = "Users",
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "Id", new AttributeValue { S = id.ToString() } }
+                { "userName", new AttributeValue { S = userName } }
             }
         };
 
@@ -72,13 +73,57 @@ public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
         return JsonSerializer.Deserialize<User>(userDocument.ToJson());
     }
 
-    public IAsyncEnumerable<User> GetUsers(int page, int pageSize)
+    public async IAsyncEnumerable<User> GetUsers(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        var request = new QueryRequest
+        {
+            TableName = TableName,
+            Limit = pageSize,
+            ExclusiveStartKey = null
+        };
+
+        var response = await dynamoDB.QueryAsync(request);
+
+        if (response.HttpStatusCode is not HttpStatusCode.OK)
+        {
+            throw new Exception("Failed to get tickets");
+        }
+        if (response.Items is null)
+        {
+            yield break;
+        }
+
+        foreach (var item in response.Items)
+        {
+            var userDocument = Document.FromAttributeMap(item);
+            yield return JsonSerializer.Deserialize<User>(userDocument.ToJson());
+        }
     }
 
-    public Task<User> UpdateUser(User user)
+    public async Task<bool> UpdateUser(User user)
     {
-        throw new NotImplementedException();
+        var userDocument = Document.FromJson(JsonSerializer.Serialize(user));
+
+        var request = new UpdateItemRequest
+        {
+            TableName = TableName,
+            Key = new Dictionary<string, AttributeValue>
+            {
+                { "Id", new AttributeValue { S = user.Id.ToString() } }
+            },
+            ExpressionAttributeValues = userDocument.ToAttributeMap(),
+            UpdateExpression = "SET #userName = :userName, #password = :password, #email = :email",
+            ExpressionAttributeNames = new Dictionary<string, string>
+            {
+                { "#userName", "userName" },
+                { "#password", "password" },
+                { "#email", "email" }
+            },
+            ReturnValues = ReturnValue.ALL_NEW
+        };
+
+        var response = await dynamoDB.UpdateItemAsync(request);
+
+        return response.HttpStatusCode is HttpStatusCode.OK;
     }
 }

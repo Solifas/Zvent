@@ -14,15 +14,12 @@ public class GenerateTicketHandler(IMapper mapper, ITicketRepository ticketRepos
     {
         var ticket = mapper.Map<Ticket>(request);
 
-        var createdTicket = await ticketRepository.CreateTicket(ticket);
-
-
-
+        var createdTicketId = await ticketRepository.CreateTicket(ticket);
 
 
         return new GenerateTicketResponse
         {
-            TicketCode = $"{settings.Value.SecretPrefix}-{createdTicket.Id}"
+            TicketCode = $"{settings.Value.SecretPrefix}-{createdTicketId}"
         };
         // emailing service or whatsapp api integration
         throw new NotImplementedException();

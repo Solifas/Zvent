@@ -10,12 +10,14 @@ namespace Zvent.Server.Infrastructure.Persistance.Repositories;
 
 public class TicketDynamoDbRepository(IAmazonDynamoDB dynamoDB) : ITicketRepository
 {
+    private const string TableName = "Tickets";
+
     public async Task<Guid> CreateTicket(Ticket ticket)
     {
         var ticketDocument = Document.FromJson(JsonSerializer.Serialize(ticket));
         var request = new PutItemRequest
         {
-            TableName = "Tickets",
+            TableName = TableName,
             Item = ticketDocument.ToAttributeMap()
         };
         var response = await dynamoDB.PutItemAsync(request);
@@ -30,7 +32,7 @@ public class TicketDynamoDbRepository(IAmazonDynamoDB dynamoDB) : ITicketReposit
     {
         var request = new DeleteItemRequest
         {
-            TableName = "Tickets",
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>
             {
                 { "Id", new AttributeValue { S = id.ToString() } }
@@ -47,7 +49,7 @@ public class TicketDynamoDbRepository(IAmazonDynamoDB dynamoDB) : ITicketReposit
     {
         var request = new GetItemRequest
         {
-            TableName = "Tickets",
+            TableName = TableName,
             Key = new Dictionary<string, AttributeValue>
             {
                 { "Id", new AttributeValue { S = id.ToString() } }
@@ -69,11 +71,13 @@ public class TicketDynamoDbRepository(IAmazonDynamoDB dynamoDB) : ITicketReposit
     {
         var request = new QueryRequest
         {
-            TableName = "Tickets",
+            TableName = TableName,
             Limit = pageSize,
             ExclusiveStartKey = null
         };
+
         var response = await dynamoDB.QueryAsync(request);
+
         if (response.HttpStatusCode is not HttpStatusCode.OK)
         {
             throw new Exception("Failed to get tickets");
@@ -100,7 +104,7 @@ public class TicketDynamoDbRepository(IAmazonDynamoDB dynamoDB) : ITicketReposit
         var ticketDocument = Document.FromJson(JsonSerializer.Serialize(ticket));
         var request = new PutItemRequest
         {
-            TableName = "Tickets",
+            TableName = TableName,
             Item = ticketDocument.ToAttributeMap()
         };
         var response = await dynamoDB.PutItemAsync(request);

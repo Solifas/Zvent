@@ -1,5 +1,5 @@
-using AutoMapper;
 using MediatR;
+using AutoMapper;
 using Zvent.Server.Domain.Entities;
 using Zvent.Server.Usecase.Persistance.Interfaces;
 
@@ -10,11 +10,13 @@ public class RegisterEventHandler(IMapper mapper, IEventsRepository eventsReposi
     public async Task<RegisterEventResponse> Handle(RegisterEventCommand request, CancellationToken cancellationToken)
     {
         var @event = mapper.Map<Event>(request);
+        @event.Id = Guid.NewGuid();
         var createdEvent = await eventsRepository.CreateEvent(@event);
 
         return new RegisterEventResponse
         {
-            Id = createdEvent.Id
+            Id = @event.Id,
+            Name = @event.Name
         };
     }
 }
