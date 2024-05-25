@@ -10,6 +10,8 @@ namespace Zvent.Server.Infrastructure.Persistance.Repositories;
 
 public class EventsDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IEventsRepository
 {
+    private readonly IAmazonDynamoDB _dynamoDB = dynamoDB;
+
     public async Task<bool> CreateEvent(Event @event)
     {
         var eventDocument = Document.FromJson(JsonSerializer.Serialize(@event));
@@ -18,9 +20,8 @@ public class EventsDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IEventsReposit
             TableName = "Events",
             Item = eventDocument.ToAttributeMap()
         };
-        var response = await dynamoDB.PutItemAsync(request);
+        var response = await _dynamoDB.PutItemAsync(request);
         return response.HttpStatusCode is HttpStatusCode.OK;
-
     }
 
     public async Task DeleteEvent(Guid id)
@@ -42,43 +43,50 @@ public class EventsDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IEventsReposit
 
     public async Task<Event?> GetEvent(Guid id)
     {
-        var request = new GetItemRequest
+        try
         {
-            TableName = "Events",
-            Key = new Dictionary<string, AttributeValue>
+
+            var request = new GetItemRequest
             {
-                { "Id", new AttributeValue { S = id.ToString() } }
+                TableName = "Events",
+                Key = new Dictionary<string, AttributeValue>
+            {
+                { "id", new AttributeValue { S = id.ToString() } }
             }
-        };
-        var response = await dynamoDB.GetItemAsync(request);
-        if (response.HttpStatusCode is not HttpStatusCode.OK)
-        {
-            throw new Exception("Failed to get event");
+            };
+            var response = await _dynamoDB.GetItemAsync(request);
+            if (response.HttpStatusCode is not HttpStatusCode.OK)
+            {
+                throw new Exception("Failed to get event");
+            }
+            if (response.Item is null)
+            {
+                return null;
+            }
+            var document = Document.FromAttributeMap(response.Item);
+            return JsonSerializer.Deserialize<Event>(document.ToJson());
         }
-        if (response.Item is null)
+        catch (System.Exception ex)
         {
-            return null;
+
+            throw;
         }
-        return JsonSerializer.Deserialize<Event>(response.Item["Item"].S);
     }
 
-    public async IAsyncEnumerable<Event> GetEvents(int page, int pageSize)
+    public async Task<IEnumerable<Event>> GetEvents(int page, int pageSize)
     {
-        // var request = new QueryRequest
-        // {
-        //     TableName = "Events",
-        //     Limit = pageSize,
-        //     KeyConditionExpression = "id = :v_id",
-        //     ExpressionAttributeValues = new Dictionary<string, AttributeValue> { { ":v_id", new AttributeValue { N = "123" } } }, // replace with your actual primary key value
-        // };
+        var request = new QueryRequest
+        {
+            TableName = "Events",
+            Limit = pageSize,
+            KeyConditionExpression = "id = :v_id",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> { { ":v_id", new AttributeValue { N = "123" } } }, // replace with your actual primary key value
+        };
 
-        // var response = await dynamoDB.QueryAsync(request);
-
-        // foreach (var item in response.Items)
-        // {
-        //     yield return JsonSerializer.Deserialize<Event>(item["Item"].S);
-        // }
-        throw new NotImplementedException();
+        var response = await dynamoDB.QueryAsync(request);
+        var events = (from item in response.Items
+                      select JsonSerializer.Deserialize<Event>(item["Item"].S)).ToList();
+        return [.. events];
     }
 
     public async Task<bool> UpdateEvent(Event @event)

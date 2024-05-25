@@ -73,7 +73,7 @@ public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
         return JsonSerializer.Deserialize<User>(userDocument.ToJson());
     }
 
-    public async IAsyncEnumerable<User> GetUsers(int page, int pageSize)
+    public async Task<IEnumerable<User>> GetUsers(int page, int pageSize)
     {
         var request = new QueryRequest
         {
@@ -88,16 +88,18 @@ public class UserDynamoDbRepository(IAmazonDynamoDB dynamoDB) : IUserRepository
         {
             throw new Exception("Failed to get tickets");
         }
+        var users = new List<User>();
         if (response.Items is null)
         {
-            yield break;
+            return users;
         }
 
         foreach (var item in response.Items)
         {
             var userDocument = Document.FromAttributeMap(item);
-            yield return JsonSerializer.Deserialize<User>(userDocument.ToJson());
+            users.Add(JsonSerializer.Deserialize<User>(userDocument.ToJson()));
         }
+        return users;
     }
 
     public async Task<bool> UpdateUser(User user)

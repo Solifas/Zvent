@@ -1,39 +1,31 @@
 using Zvent.Server.Usecase;
 using Zvent.Server.Infrastructure;
-using Zvent.Server.WebApi.Extensions;
 using Zvent.Server.Infrastructure.MappingProfiles;
+using Zvent.Server.Usecase.Exceptions;
+using Amazon.DynamoDBv2;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddUsecase(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingConfigurations));
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
+//show me how i can use the AddAWSService method to register the IAmazonDynamoDB service with the container as a singleton service
 
-app.RegisterEndpointDefinitions();
-//add db context for sql server
-// app.Services.AddDbContext<AppDbContext>(options =>
-// {
-//     options.UseSqlServer(app.Configuration.GetConnectionString("DefaultConnection"));
-// });
+app.UseSwagger();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwaggerUI();
 
+app.UseRouting();
+
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 app.UseHttpsRedirection();
-
-app.MapGet("/weatherforecast", () =>
-{
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();

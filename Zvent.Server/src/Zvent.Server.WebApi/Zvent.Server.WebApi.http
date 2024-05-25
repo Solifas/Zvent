@@ -1,6 +1,17 @@
 @Zvent.Server.WebApi_HostAddress = http://localhost:5009
 
-GET {{Zvent.Server.WebApi_HostAddress}}/weatherforecast/
+POST /api/Event/create-event
+Content-Type: application/json
 Accept: application/json
+
+{
+  "name": "Kendrick Lamar Concert",
+  "description": "Epic concert with Kendrick Lamar as the main feature",
+  "location": "Cape town, South Africa",
+  "userType": 0,
+  "numberOfTickets": 50000,
+  "startDate": "2024-05-18T14:54:28.209Z",
+  "endDate": "2024-05-18T14:54:28.209Z"
+}
 
 ###

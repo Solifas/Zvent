@@ -17,13 +17,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
+        services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+        services.AddAWSService<IAmazonDynamoDB>();
         services.AddScoped<IUserRepository, UserDynamoDbRepository>();
         services.AddScoped<IEventsRepository, EventsDynamoDbRepository>();
         services.AddScoped<ITicketRepository, TicketDynamoDbRepository>();
-
-        services.AddSingleton<IAmazonDynamoDB>(_ => new AmazonDynamoDBClient(RegionEndpoint.EUWest1));
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;

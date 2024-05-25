@@ -9,7 +9,7 @@ namespace Zvent.Server.Usecase.Persistance.Interfaces;
 public interface IUserRepository
 {
     Task<User> GetUser(string userName);
-    IAsyncEnumerable<User> GetUsers(int page, int pageSize);
+    Task<IEnumerable<User>> GetUsers(int page, int pageSize);
     Task<bool> CreateUser(User user);
     Task<bool> UpdateUser(User user);
     Task<bool> DeleteUser(Guid id);
