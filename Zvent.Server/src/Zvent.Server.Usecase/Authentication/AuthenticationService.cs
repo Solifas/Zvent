@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using AutoMapper;
 using Zvent.Server.Domain.Authentication;
 using Zvent.Server.Domain.DTOs;
@@ -6,7 +7,9 @@ using Zvent.Server.Usecase.Encryption;
 using Zvent.Server.Usecase.Persistance.Interfaces;
 
 namespace Zvent.Server.Usecase.Authentication;
-public class AuthenticationService(IJwtTokenGenerator jwtToken, IUserRepository userRepository, IEncryptionService encryptionService, IMapper mapper) : IAuthenticationService
+public class AuthenticationService(IJwtTokenGenerator jwtToken, IUserRepository userRepository,
+IEncryptionService encryptionService, IMapper mapper,
+IUserClaimsService userClaimsService) : IAuthenticationService
 {
     public async Task<AuthenticationResult> Login(string username, string password)
     {
@@ -30,6 +33,11 @@ public class AuthenticationService(IJwtTokenGenerator jwtToken, IUserRepository 
         }
 
         var token = jwtToken.GenerateToken(user.Username, user.Email);
+
+        userClaimsService.SetClaim(ClaimTypes.Name, user.Username);
+        userClaimsService.SetClaim(ClaimTypes.Email, user.Email);
+        userClaimsService.SetClaim(ClaimTypes.MobilePhone, user.Contact);
+
         var userDto = mapper.Map<UserDto>(user);
 
         return new AuthenticationResult(token, userDto);

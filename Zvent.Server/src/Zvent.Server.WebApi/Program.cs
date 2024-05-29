@@ -9,8 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddUsecase(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingConfigurations));
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

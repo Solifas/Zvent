@@ -24,5 +24,9 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 
 public class RegisterUserResponse
 {
+    public required string Name { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
     public string? Token { get; set; }
 }

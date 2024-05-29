@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Amazon;
 using Amazon.DynamoDBv2;
+using Zvent.Server.Usecase.Encryption;
 using Microsoft.Extensions.Configuration;
+using Zvent.Server.Usecase.Authentication;
+using Zvent.Server.Infrastructure.Encryption;
 using Microsoft.Extensions.DependencyInjection;
 using Zvent.Server.Infrastructure.Authentication;
-using Zvent.Server.Infrastructure.Persistance.Repositories;
-using Zvent.Server.Usecase.Authentication;
 using Zvent.Server.Usecase.Persistance.Interfaces;
+using Zvent.Server.Infrastructure.Persistance.Repositories;
 
 namespace Zvent.Server.Infrastructure;
 
@@ -20,10 +17,13 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddDefaultAWSOptions(configuration.GetAWSOptions());
         services.AddAWSService<IAmazonDynamoDB>();
+        services.AddScoped<IUserClaimsService, UserClaimsService>();
         services.AddScoped<IUserRepository, UserDynamoDbRepository>();
+        services.AddScoped<IEncryptionService, EncryptionService>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IEventsRepository, EventsDynamoDbRepository>();
         services.AddScoped<ITicketRepository, TicketDynamoDbRepository>();
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
     }

@@ -1,30 +1,41 @@
 using MediatR;
 using AutoMapper;
 using Zvent.Server.Domain.Entities;
+using Zvent.Server.Usecase.Authentication;
 using Zvent.Server.Usecase.Commands.Registration;
 using Zvent.Server.Usecase.Persistance.Interfaces;
+using System.Security.Claims;
 
 namespace Zvent.Server.Usecase.Commands.RegisterUser;
 
-public class RegistrationHandler(IMapper mapper, IUserRepository userRepository) : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
+public class RegistrationHandler(IMapper mapper, IUserRepository userRepository,
+ IJwtTokenGenerator tokenGenerator, IUserClaimsService userClaimsService) : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
     public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = mapper.Map<User>(request);
+
+        bool isUserCreated = await userRepository.CreateUser(user);
+        if (!isUserCreated) return new RegisterUserResponse
         {
-            var user = mapper.Map<User>(request);
+            ErrorMessage = "User already exists or there was an error creating the user.",
+            Name = request.Name,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber
+        };
 
-            var createdUser = await userRepository.CreateUser(user);
+        var token = tokenGenerator.GenerateToken(request.Name, request.Email);
 
-            return new RegisterUserResponse
-            {
-                Token = "token"
-            };
-        }
-        catch (System.Exception ex)
+        userClaimsService.SetClaim(ClaimTypes.Name, request.Name);
+        userClaimsService.SetClaim(ClaimTypes.Email, request.Email);
+        userClaimsService.SetClaim(ClaimTypes.MobilePhone, request.PhoneNumber);
+
+        return new RegisterUserResponse
         {
-
-            throw;
-        }
+            Name = request.Name,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
+            Token = token
+        };
     }
 }
